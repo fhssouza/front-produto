@@ -8,7 +8,7 @@ import { Produto } from '../model/produto';
 })
 export class ProdutoService {
 
-  private _URL = environment.url + "produtos";
+  private _URL = environment.url + "produto";
 
   constructor(private http: HttpClient) { }
 
