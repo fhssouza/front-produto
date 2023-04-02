@@ -9,6 +9,8 @@ import { Produto } from './model/produto';
   styleUrls: ['./app.component.sass']
 })
 export class AppComponent {
+
+  produtos: Produto[] = [];
   
   produtoForm = this.fb.group({
     id: [],
@@ -20,7 +22,9 @@ export class AppComponent {
   constructor(
     private fb: FormBuilder,
     private produtoService: ProdutoService
-  ){ }
+  ){
+    this.buscarProdutos();
+   }
 
   criarProduto(): Produto{
     return {
@@ -31,6 +35,17 @@ export class AppComponent {
     }
   }
 
+  buscarProdutos(){
+    this.produtoService.buscarTodos().subscribe({
+      next: (res) => {
+        this.produtos = res;
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    })
+  }
+
   salvar(){
     if(this.produtoForm.valid){
      const produto = this.criarProduto();
@@ -39,7 +54,24 @@ export class AppComponent {
      this.produtoService.salvar(produto).subscribe(
       {
         next: (res) => {
+          this.produtoForm.reset();
+          this.buscarProdutos();
           alert("Produto salvo com sucesso!");
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      })
+    }
+  }
+
+  remover(produto: Produto) {
+    const confirmacao = confirm("Quer realmente excluir esse produto?" + produto.nome);
+    if (confirmacao){
+      this.produtoService.remover(produto.id).subscribe({
+        next: (res) => {
+          this.buscarProdutos();
+          alert("Produto removido com sucesso!");
         },
         error: (error) => {
           console.log(error);
